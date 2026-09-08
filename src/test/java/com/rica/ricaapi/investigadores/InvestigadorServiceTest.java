@@ -1,5 +1,6 @@
-package com.rica.ricaapi;
+package com.rica.ricaapi.investigadores;
 
+import com.rica.ricaapi.compartido.RecursoNoEncontradoException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

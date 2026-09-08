@@ -1,20 +1,26 @@
-package com.rica.ricaapi;
+package com.rica.ricaapi.publicaciones;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Map;
 
-public class PublicacionResponse {
+@Document(collection = "publicaciones")
+public class Publicacion {
 
+    @Id
     private String id;
+
     private String investigadorCorreo;
     private String titulo;
     private String tipo;
     private Integer anio;
     private Map<String, String> detalles;
 
-    public PublicacionResponse() {
+    public Publicacion() {
     }
 
-    public PublicacionResponse(String id, String investigadorCorreo, String titulo, String tipo, Integer anio, Map<String, String> detalles) {
+    public Publicacion(String id, String investigadorCorreo, String titulo, String tipo, Integer anio, Map<String, String> detalles) {
         this.id = id;
         this.investigadorCorreo = investigadorCorreo;
         this.titulo = titulo;
