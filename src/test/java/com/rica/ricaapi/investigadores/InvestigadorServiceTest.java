@@ -20,12 +20,15 @@ class InvestigadorServiceTest {
     @Mock
     private InvestigadorRepository investigadorRepository;
 
+    @Mock
+    private InvestigadorFactory investigadorFactory;
+
     @InjectMocks
     private InvestigadorService investigadorService;
 
     @Test
     void buscarPorIdDevuelveElInvestigadorCuandoExiste() {
-        Investigador investigador = new Investigador(1L, "Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
+        Investigador investigador = new Investigador(1L, "Ana Torres", new CorreoInstitucional("ana.torres@uptc.edu.co"), "GIT-UPTC");
         when(investigadorRepository.findById(1L)).thenReturn(Optional.of(investigador));
 
         Investigador resultado = investigadorService.buscarPorId(1L);
@@ -43,14 +46,28 @@ class InvestigadorServiceTest {
     }
 
     @Test
-    void registrarRechazaCorreoInstitucionalDuplicado() {
-        Investigador nuevo = new Investigador(null, "Carlos Ruiz", "carlos.ruiz@uptc.edu.co", "GIT-UPTC");
-        when(investigadorRepository.existsByCorreoInstitucional("carlos.ruiz@uptc.edu.co")).thenReturn(true);
+    void registrarDelegaEnFactoryYGuardaElInvestigadorConstruido() {
+        Investigador construidoPorFactory = new Investigador(null, "Ana Torres", new CorreoInstitucional("ana.torres@uptc.edu.co"), "GIT-UPTC");
+        Investigador guardado = new Investigador(1L, "Ana Torres", new CorreoInstitucional("ana.torres@uptc.edu.co"), "GIT-UPTC");
 
-        assertThatThrownBy(() -> investigadorService.registrar(nuevo))
+        when(investigadorFactory.crear("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC"))
+                .thenReturn(construidoPorFactory);
+        when(investigadorRepository.save(construidoPorFactory)).thenReturn(guardado);
+
+        Investigador resultado = investigadorService.registrar("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
+
+        assertThat(resultado.getId()).isEqualTo(1L);
+        verify(investigadorFactory).crear("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
+        verify(investigadorRepository).save(construidoPorFactory);
+    }
+
+    @Test
+    void registrarPropagaLaExcepcionDeLaFactoryCuandoElCorreoYaExiste() {
+        when(investigadorFactory.crear("Carlos Ruiz", "carlos.ruiz@uptc.edu.co", "GIT-UPTC"))
+                .thenThrow(new CorreoDuplicadoException("Ya existe un investigador registrado con el correo carlos.ruiz@uptc.edu.co"));
+
+        assertThatThrownBy(() -> investigadorService.registrar("Carlos Ruiz", "carlos.ruiz@uptc.edu.co", "GIT-UPTC"))
                 .isInstanceOf(CorreoDuplicadoException.class);
-
-        verify(investigadorRepository).existsByCorreoInstitucional("carlos.ruiz@uptc.edu.co");
     }
 
 }

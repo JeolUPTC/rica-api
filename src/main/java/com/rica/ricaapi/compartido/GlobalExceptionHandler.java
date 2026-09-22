@@ -1,6 +1,7 @@
 package com.rica.ricaapi.compartido;
 
 import com.rica.ricaapi.investigadores.CorreoDuplicadoException;
+import com.rica.ricaapi.publicaciones.LimiteAnualExcedidoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,6 +22,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CorreoDuplicadoException.class)
     public ResponseEntity<Map<String, Object>> manejarCorreoDuplicado(CorreoDuplicadoException ex) {
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(LimiteAnualExcedidoException.class)
+    public ResponseEntity<Map<String, Object>> manejarLimiteAnualExcedido(LimiteAnualExcedidoException ex) {
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
 
