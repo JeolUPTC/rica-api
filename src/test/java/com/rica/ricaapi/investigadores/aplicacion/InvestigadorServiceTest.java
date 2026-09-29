@@ -1,6 +1,9 @@
-package com.rica.ricaapi.investigadores;
+package com.rica.ricaapi.investigadores.aplicacion;
 
 import com.rica.ricaapi.compartido.RecursoNoEncontradoException;
+import com.rica.ricaapi.investigadores.dominio.CorreoDuplicadoException;
+import com.rica.ricaapi.investigadores.dominio.CorreoInstitucional;
+import com.rica.ricaapi.investigadores.dominio.Investigador;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +21,7 @@ import static org.mockito.Mockito.when;
 class InvestigadorServiceTest {
 
     @Mock
-    private InvestigadorRepository investigadorRepository;
+    private RepositorioInvestigadores repositorioInvestigadores;
 
     @Mock
     private InvestigadorFactory investigadorFactory;
@@ -29,7 +32,7 @@ class InvestigadorServiceTest {
     @Test
     void buscarPorIdDevuelveElInvestigadorCuandoExiste() {
         Investigador investigador = new Investigador(1L, "Ana Torres", new CorreoInstitucional("ana.torres@uptc.edu.co"), "GIT-UPTC");
-        when(investigadorRepository.findById(1L)).thenReturn(Optional.of(investigador));
+        when(repositorioInvestigadores.buscarPorId(1L)).thenReturn(Optional.of(investigador));
 
         Investigador resultado = investigadorService.buscarPorId(1L);
 
@@ -38,7 +41,7 @@ class InvestigadorServiceTest {
 
     @Test
     void buscarPorIdLanzaExcepcionCuandoNoExiste() {
-        when(investigadorRepository.findById(99L)).thenReturn(Optional.empty());
+        when(repositorioInvestigadores.buscarPorId(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> investigadorService.buscarPorId(99L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
@@ -52,13 +55,13 @@ class InvestigadorServiceTest {
 
         when(investigadorFactory.crear("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC"))
                 .thenReturn(construidoPorFactory);
-        when(investigadorRepository.save(construidoPorFactory)).thenReturn(guardado);
+        when(repositorioInvestigadores.guardar(construidoPorFactory)).thenReturn(guardado);
 
         Investigador resultado = investigadorService.registrar("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
 
         assertThat(resultado.getId()).isEqualTo(1L);
         verify(investigadorFactory).crear("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
-        verify(investigadorRepository).save(construidoPorFactory);
+        verify(repositorioInvestigadores).guardar(construidoPorFactory);
     }
 
     @Test

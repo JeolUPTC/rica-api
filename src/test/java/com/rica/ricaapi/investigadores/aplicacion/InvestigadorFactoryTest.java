@@ -1,5 +1,7 @@
-package com.rica.ricaapi.investigadores;
+package com.rica.ricaapi.investigadores.aplicacion;
 
+import com.rica.ricaapi.investigadores.dominio.CorreoDuplicadoException;
+import com.rica.ricaapi.investigadores.dominio.Investigador;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,14 +17,14 @@ import static org.mockito.Mockito.when;
 class InvestigadorFactoryTest {
 
     @Mock
-    private InvestigadorRepository investigadorRepository;
+    private RepositorioInvestigadores repositorioInvestigadores;
 
     @InjectMocks
     private InvestigadorFactory investigadorFactory;
 
     @Test
     void crearConstruyeUnInvestigadorValidoCuandoElCorreoNoExiste() {
-        when(investigadorRepository.existsByCorreoInstitucional_Valor("ana.torres@uptc.edu.co")).thenReturn(false);
+        when(repositorioInvestigadores.existeCorreo("ana.torres@uptc.edu.co")).thenReturn(false);
 
         Investigador investigador = investigadorFactory.crear("Ana Torres", "ana.torres@uptc.edu.co", "GIT-UPTC");
 
@@ -34,12 +36,12 @@ class InvestigadorFactoryTest {
 
     @Test
     void crearRechazaUnCorreoInstitucionalYaRegistrado() {
-        when(investigadorRepository.existsByCorreoInstitucional_Valor("carlos.ruiz@uptc.edu.co")).thenReturn(true);
+        when(repositorioInvestigadores.existeCorreo("carlos.ruiz@uptc.edu.co")).thenReturn(true);
 
         assertThatThrownBy(() -> investigadorFactory.crear("Carlos Ruiz", "carlos.ruiz@uptc.edu.co", "GIT-UPTC"))
                 .isInstanceOf(CorreoDuplicadoException.class);
 
-        verify(investigadorRepository).existsByCorreoInstitucional_Valor("carlos.ruiz@uptc.edu.co");
+        verify(repositorioInvestigadores).existeCorreo("carlos.ruiz@uptc.edu.co");
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.rica.ricaapi.publicaciones;
 
 import com.rica.ricaapi.compartido.RecursoNoEncontradoException;
-import com.rica.ricaapi.investigadores.InvestigadorRepository;
+import com.rica.ricaapi.investigadores.infraestructura.salida.persistencia.InvestigadorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
